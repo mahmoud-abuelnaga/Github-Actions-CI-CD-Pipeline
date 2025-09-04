@@ -1,11 +1,11 @@
-resource "aws_key_pair" "production" {
-  key_name   = "github-actions-proj-production-key"
+resource "aws_key_pair" "staging" {
+  key_name   = "github-actions-proj-staging-key"
   public_key = var.public_key
 }
 
-resource "aws_security_group" "production" {
-  name        = "github-actions-proj-production-sg"
-  description = "Security group for production environment"
+resource "aws_security_group" "staging" {
+  name        = "github-actions-proj-staging-sg"
+  description = "Security group for staging environment"
   vpc_id      = data.aws_vpc.ec2_vpc.id
 
   ingress {
@@ -23,15 +23,15 @@ resource "aws_security_group" "production" {
   }
 }
 
-resource "aws_instance" "prod_instance" {
-  ami                         = data.aws_ami.prod_ami.id
+resource "aws_instance" "staging_instance" {
+  ami                         = data.aws_ami.staging_ami.id
   instance_type               = var.instance_type
-  key_name                    = aws_key_pair.production.key_name
-  vpc_security_group_ids      = [aws_security_group.production.id]
+  key_name                    = aws_key_pair.staging.key_name
+  vpc_security_group_ids      = [aws_security_group.staging.id]
   associate_public_ip_address = true
 
   tags = {
-    Name = "github-actions-prod-instance"
+    Name = "github-actions-staging-instance"
   }
 
 }
