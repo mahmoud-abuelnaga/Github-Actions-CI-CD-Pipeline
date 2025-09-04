@@ -46,10 +46,26 @@ source "amazon-ebs" "github_actions_ami" {
   }
 }
 
+locals {
+    timestamp = formatdate("2006-01-02-15-04-05", timestamp())
+}
+
 build {
   sources = ["source.amazon-ebs.github_actions_ami"]
 
   provisioner "shell" {
     script = "ami_init.sh"
+  }
+
+  post-processor "manifest" {
+      output = "manifest-${local.timestamp}.json"
+  }
+
+  post-processor "shell-local" {
+      inline = [
+          "cat manifest-${local.timestamp}.json | jq '.builds[0].artifact_id' | cut -d '\"' -f 2 | cut -d ':' -f 2 | tee -a ami_id.txt",
+          "tail -n 2 ami_id.txt | tee ami_id.txt",
+          "rm -f manifest-${local.timestamp}.json"
+      ]
   }
 }
