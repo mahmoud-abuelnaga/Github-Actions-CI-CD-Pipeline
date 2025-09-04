@@ -6,15 +6,17 @@ on:
             - "src/**"
         branches:
             - main
+
     pull_request:
         paths:
             - "src/**"
         branches:
             - main
+
     workflow_dispatch:
 
 jobs:
-    test:
+    src_test:
         runs-on: ubuntu-latest
         defaults:
             run:
@@ -33,7 +35,7 @@ jobs:
               run: |
                   npm run test
 
-    lint:
+    src_lint:
         runs-on: ubuntu-latest
         defaults:
             run:
