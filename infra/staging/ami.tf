@@ -1,4 +1,4 @@
-data "aws_ami" "prod_ami" {
+data "aws_ami" "staging_ami" {
   most_recent = true
   filter {
     name   = "name"
