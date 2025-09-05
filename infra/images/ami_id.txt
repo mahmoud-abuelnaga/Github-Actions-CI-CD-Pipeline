@@ -1,2 +1,0 @@
-ami-0ede25c8db5501131
-ami-05294619bf10f2eeb
