@@ -84,7 +84,6 @@ jobs:
             - name: Delete old AMI snapshots
               if: steps.get_old_ami_id.outputs.old_ami_id != ''
               run: |
-                  echo "${{ steps.get_snapshots.outputs.snapshots }}"
                   for SNAPSHOT_ID in ${{ steps.get_snapshots.outputs.snapshots }}; do
                     if [[ -z $SNAPSHOT_ID || $SNAPSHOT_ID == 'None' ]]; then
                       continue

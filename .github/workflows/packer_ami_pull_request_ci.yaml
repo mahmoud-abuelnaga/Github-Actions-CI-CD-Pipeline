@@ -70,7 +70,6 @@ jobs:
 
             - name: Delete created snapshots
               run: |
-                  echo "${{ steps.get_snapshots.outputs.snapshots }}"
                   for SNAPSHOT_ID in ${{ steps.get_snapshots.outputs.snapshots }}; do
                     if [[ -z $SNAPSHOT_ID || $SNAPSHOT_ID == 'None' ]]; then
                       continue
