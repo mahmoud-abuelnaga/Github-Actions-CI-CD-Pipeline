@@ -52,12 +52,14 @@ jobs:
                                     --owners self \
                                     --filters "Name=name,Values=github-actions-ci-cd-pipeline-ami" \
                                     --query "Images[].ImageId" \
+                                    --region ${{ vars.AWS_DEFAULT_REGION }} \
                                     --output text)
 
                   echo "old_ami_id=$OLD_AMI_ID" >> $GITHUB_OUTPUT
 
-            - name: Get AMI Snapshots
+            - name: Get old AMI Snapshots
               id: get_snapshots
+              if: steps.get_old_ami_id.outputs.old_ami_id != '' && steps.get_old_ami_id.outputs.old_ami_id != 'None'
               run: |
                   SNAPSHOTS=$(aws ec2 describe-images --image-ids ${{ steps.get_old_ami_id.outputs.old_ami_id }} --query 'Images[0].BlockDeviceMappings[?Ebs].Ebs.SnapshotId' --output text --region ${{ vars.AWS_DEFAULT_REGION }})
                   echo "snapshots=$SNAPSHOTS" >> $GITHUB_OUTPUT
@@ -78,11 +80,11 @@ jobs:
                   echo "ami_id=$AMI_ID" >> $GITHUB_OUTPUT
 
             - name: Delete old AMI
-              if: steps.get_old_ami_id.outputs.old_ami_id != ''
+              if: steps.get_old_ami_id.outputs.old_ami_id != '' && steps.get_old_ami_id.outputs.old_ami_id != 'None'
               run: aws ec2 deregister-image --image-id ${{ steps.get_old_ami_id.outputs.old_ami_id }} --region ${{ vars.AWS_DEFAULT_REGION }}
 
             - name: Delete old AMI snapshots
-              if: steps.get_old_ami_id.outputs.old_ami_id != ''
+              if: steps.get_old_ami_id.outputs.old_ami_id != '' && steps.get_old_ami_id.outputs.old_ami_id != 'None'
               run: |
                   for SNAPSHOT_ID in ${{ steps.get_snapshots.outputs.snapshots }}; do
                     if [[ -z $SNAPSHOT_ID || $SNAPSHOT_ID == 'None' ]]; then
