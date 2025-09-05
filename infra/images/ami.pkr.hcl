@@ -24,12 +24,16 @@ variable "ssh_username" {
 
 variable "source_ami_name" {
   type    = string
-  default = "ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-amd64-server-*"
+  default = "ubuntu/images/hvm-ssd-gp3/ubuntu-noble-24.04-amd64-server-*"
 }
 
+variable "resulting_ami_name" {
+  type    = string
+  default = "github-actions-ci-cd-pipeline-ami"
+}
 
 source "amazon-ebs" "github_actions_ami" {
-  ami_name      = "github-actions-ci-cd-pipeline-ami"
+  ami_name      = var.resulting_ami_name
   instance_type = var.instance_type
   region        = var.region
 
