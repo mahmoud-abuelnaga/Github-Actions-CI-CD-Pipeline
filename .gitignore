@@ -140,3 +140,7 @@ vite.config.ts.timestamp-*
 
 # ignore .terrform files
 infra/**/.terraform*
+
+# ignore packer manifest files
+infra/images/manifest*.json
+infra/images/ami_id.txt
