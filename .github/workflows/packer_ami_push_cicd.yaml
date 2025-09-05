@@ -56,6 +56,12 @@ jobs:
 
                   echo "old_ami_id=$OLD_AMI_ID" >> $GITHUB_OUTPUT
 
+            - name: Get AMI Snapshots
+              id: get_snapshots
+              run: |
+                  SNAPSHOTS=$(aws ec2 describe-images --image-ids ${{ steps.get_old_ami_id.outputs.old_ami_id }} --query 'Images[0].BlockDeviceMappings[?Ebs].Ebs.SnapshotId' --output text --region ${{ vars.AWS_DEFAULT_REGION }})
+                  echo "snapshots=$SNAPSHOTS" >> $GITHUB_OUTPUT
+
             - name: Set up Packer
               uses: hashicorp/setup-packer@main
 
@@ -78,9 +84,8 @@ jobs:
             - name: Delete old AMI snapshots
               if: steps.get_old_ami_id.outputs.old_ami_id != ''
               run: |
-                  SNAPSHOT_IDS=$(aws ec2 describe-images --image-ids ${{ steps.get_old_ami_id.outputs.old_ami_id }} --query 'Images[0].BlockDeviceMappings[?Ebs].Ebs.SnapshotId' --output text --region ${{ vars.AWS_DEFAULT_REGION }})
-                  echo "$SNAPSHOT_IDS"
-                  for SNAPSHOT_ID in $SNAPSHOT_IDS; do
+                  echo "${{ steps.get_snapshots.outputs.snapshots }}"
+                  for SNAPSHOT_ID in ${{ steps.get_snapshots.outputs.snapshots }}; do
                     if [[ -z $SNAPSHOT_ID || $SNAPSHOT_ID == 'None' ]]; then
                       continue
                     fi
