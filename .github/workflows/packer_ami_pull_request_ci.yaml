@@ -44,6 +44,9 @@ jobs:
             - name: Set up Packer
               uses: hashicorp/setup-packer@main
 
+            - name: Initialize Packer
+              run: packer init .
+
             - name: Build Packer template
               run: packer build .
 
