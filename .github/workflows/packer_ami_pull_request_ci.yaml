@@ -1,0 +1,64 @@
+name: Packer AMI Pull Request CI
+
+on:
+    pull_request:
+        paths:
+            - "infra/images/**"
+        branches:
+            - main
+
+    workflow_dispatch:
+
+defaults:
+    run:
+        working-directory: ./infra/images
+
+jobs:
+    packer_ci_validate:
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v5
+
+            - name: Set up Packer
+              uses: hashicorp/setup-packer@main
+
+            - name: Validate Packer template
+              run: packer validate .
+
+    packer_build:
+        runs-on: ubuntu-latest
+        needs: packer_ci_validate
+        if: github.event.pull_request.merged == false
+
+        env:
+            AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
+            AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+            PACKER_VAR_resulting_ami_name: "pull-request-${{ github.run_id }}-github-actions-cicd-proj"
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v5
+
+            - name: Set up Packer
+              uses: hashicorp/setup-packer@main
+
+            - name: Build Packer template
+              run: packer build .
+
+            - name: Get resulting AMI ID
+              id: get_ami_id
+              run: |
+                  AMI_ID=$(cat ami_id.txt)
+                  echo "ami_id=$AMI_ID" >> $GITHUB_OUTPUT
+
+            - name: Delete created AMI
+              run: aws ec2 deregister-image --image-id ${{ steps.get_ami_id.outputs.ami_id }} --region ${{ vars.AWS_DEFAULT_REGION }}
+
+            - name: Delete created snapshots
+              run: |
+                  SNAPSHOT_IDS=$(aws ec2 describe-images --image-ids ${{ steps.get_ami_id.outputs.ami_id }} --query 'Images[0].BlockDeviceMappings[*].Ebs.SnapshotId' --output text --region ${{ vars.AWS_DEFAULT_REGION }})
+                  for SNAPSHOT_ID in $SNAPSHOT_IDS; do
+                    aws ec2 delete-snapshot --snapshot-id $SNAPSHOT_ID --region ${{ vars.AWS_DEFAULT_REGION }}
+                  done
