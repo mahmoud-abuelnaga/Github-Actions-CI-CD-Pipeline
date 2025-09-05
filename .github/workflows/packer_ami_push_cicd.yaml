@@ -79,6 +79,11 @@ jobs:
               if: steps.get_old_ami_id.outputs.old_ami_id != ''
               run: |
                   SNAPSHOT_IDS=$(aws ec2 describe-images --image-ids ${{ steps.get_old_ami_id.outputs.old_ami_id }} --query 'Images[0].BlockDeviceMappings[?Ebs].Ebs.SnapshotId' --output text --region ${{ vars.AWS_DEFAULT_REGION }})
+                  echo "$SNAPSHOT_IDS"
                   for SNAPSHOT_ID in $SNAPSHOT_IDS; do
+                    if [[ -z $SNAPSHOT_ID || $SNAPSHOT_ID == 'None' ]]; then
+                      continue
+                    fi
+
                     aws ec2 delete-snapshot --snapshot-id $SNAPSHOT_ID --region ${{ vars.AWS_DEFAULT_REGION }}
                   done
