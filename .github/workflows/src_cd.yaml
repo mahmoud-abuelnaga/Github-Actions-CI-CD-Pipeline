@@ -33,6 +33,7 @@ jobs:
                   INSTANCE_ID=$(aws ec2 describe-instances \
                                   --filters "Name=tag:Name,Values=github-actions-staging-instance" \
                                   --query "Reservations[*].Instances[*].InstanceId" \
+                                  --region ${{ vars.AWS_DEFAULT_REGION }} \
                                   --output text)
 
                   echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
@@ -49,6 +50,7 @@ jobs:
                   PUBLIC_IP=$(aws ec2 describe-instances \
                                 --instance-ids ${{ steps.get_instance_id.outputs.instance_id }} \
                                 --query 'Reservations[0].Instances[0].PublicIpAddress' \
+                                --region ${{ vars.AWS_DEFAULT_REGION }} \
                                 --output text)
 
                   echo "instance_public_ip=$PUBLIC_IP" >> $GITHUB_OUTPUT
@@ -59,6 +61,7 @@ jobs:
                   SG_ID=$(aws ec2 describe-instances \
                               --instance-ids ${{ steps.get_instance_id.outputs.instance_id }} \
                               --query "Reservations[*].Instances[*].SecurityGroups[*].GroupId" \
+                              --region ${{ vars.AWS_DEFAULT_REGION }} \
                               --output text)
 
                   echo "security_group_id=$SG_ID" >> $GITHUB_OUTPUT
@@ -75,6 +78,7 @@ jobs:
                       --group-id ${{ steps.get_staging_instance_security_group.outputs.security_group_id }} \
                       --ip-permissions \
                       "IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges=[{CidrIp=${{ steps.get_runner_public_ip.outputs.runner_public_ip }}/32,Description='Allow ssh from runner'}]"
+                      --region ${{ vars.AWS_DEFAULT_REGION }}
 
             - name: Deploy to staging instance
               uses: burnett01/rsync-deployments@7.1.0
@@ -105,6 +109,7 @@ jobs:
                       --protocol tcp \
                       --port 22 \
                       --cidr "${{ steps.get_runner_public_ip.outputs.runner_public_ip }}/32"
+                      --region ${{ vars.AWS_DEFAULT_REGION }}
 
     src_deploy_to_production:
         runs-on: ubuntu-latest
@@ -126,6 +131,7 @@ jobs:
                   INSTANCE_ID=$(aws ec2 describe-instances \
                                   --filters "Name=tag:Name,Values=github-actions-prod-instance" \      
                                   --query "Reservations[*].Instances[*].InstanceId" \
+                                  --region ${{ vars.AWS_DEFAULT_REGION }} \
                                   --output text)
 
                   echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
@@ -142,6 +148,7 @@ jobs:
                   PUBLIC_IP=$(aws ec2 describe-instances \
                                 --instance-ids ${{ steps.get_instance_id.outputs.instance_id }} \
                                 --query 'Reservations[0].Instances[0].PublicIpAddress' \
+                                --region ${{ vars.AWS_DEFAULT_REGION }} \
                                 --output text)
 
                   echo "instance_public_ip=$PUBLIC_IP" >> $GITHUB_OUTPUT
@@ -152,6 +159,7 @@ jobs:
                   SG_ID=$(aws ec2 describe-instances \
                               --instance-ids ${{ steps.get_instance_id.outputs.instance_id }} \          
                               --query "Reservations[*].Instances[*].SecurityGroups[*].GroupId" \
+                              --region ${{ vars.AWS_DEFAULT_REGION }} \
                               --output text)
 
                   echo "security_group_id=$SG_ID" >> $GITHUB_OUTPUT
@@ -168,6 +176,7 @@ jobs:
                       --group-id ${{ steps.get_instance_security_group.outputs.security_group_id }} \
                       --ip-permissions \
                       "IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges=[{CidrIp=${{ steps.get_runner_public_ip.outputs.runner_public_ip }}/32,Description='Allow ssh from runner'}]"
+                      --region ${{ vars.AWS_DEFAULT_REGION }}
 
             - name: Deploy to production instance
               uses: burnett01/rsync-deployments@7.1.0
@@ -198,3 +207,4 @@ jobs:
                       --protocol tcp \
                       --port 22 \
                       --cidr "${{ steps.get_runner_public_ip.outputs.runner_public_ip }}/32"
+                      --region ${{ vars.AWS_DEFAULT_REGION }}
