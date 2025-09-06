@@ -20,11 +20,11 @@ jobs:
             AWS_SECRET_ACCESS_KEY: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
 
         steps:
-            - name: Run CI Workflow to test the code
-              uses: ./.github/workflows/src_ci.yaml
-
             - name: Checkout repository
               uses: actions/checkout@v5
+
+            - name: Run CI Workflow to test the code
+              uses: ./.github/workflows/src_ci.yaml
 
             - name: Get the instance id of the staging instance
               id: get_instance_id
