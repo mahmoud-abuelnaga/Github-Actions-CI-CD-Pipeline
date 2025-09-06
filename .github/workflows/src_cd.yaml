@@ -95,6 +95,7 @@ jobs:
                       cd /opt/app
                       npm ci --only=production
                       pm2 reload "node-server" --update-env || pm2 start /opt/app/bin/www --name "node-server" --update-env
+                      sudo systemctl reload nginx
 
             - name: Disallow ssh on the security group of instance from the runner ip
               run: |
@@ -187,6 +188,7 @@ jobs:
                       cd /opt/app
                       npm ci --only=production
                       pm2 reload "node-server" --update-env || pm2 start /opt/app/bin/www --name "node-server" --update-env
+                      sudo systemctl reload nginx
 
             - name: Disallow ssh on the security group of instance from the runner ip
               run: |
