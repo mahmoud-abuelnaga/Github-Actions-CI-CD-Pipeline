@@ -31,7 +31,7 @@ jobs:
               id: get_instance_id
               run: |
                   INSTANCE_ID=$(aws ec2 describe-instances \
-                                  --filters "Name=tag:Name,Values=github-actions-staging-instance" \      
+                                  --filters "Name=tag:Name,Values=github-actions-staging-instance" \
                                   --query "Reservations[*].Instances[*].InstanceId" \
                                   --output text)
 
@@ -57,7 +57,7 @@ jobs:
               id: get_staging_instance_security_group
               run: |
                   SG_ID=$(aws ec2 describe-instances \
-                              --instance-ids ${{ steps.get_instance_id.outputs.instance_id }} \          
+                              --instance-ids ${{ steps.get_instance_id.outputs.instance_id }} \
                               --query "Reservations[*].Instances[*].SecurityGroups[*].GroupId" \
                               --output text)
 
