@@ -10,11 +10,12 @@ on:
     workflow_dispatch:
 
 jobs:
-    src_test:
+    src_test_cd:
         uses: ./.github/workflows/src_ci.yaml
 
     src_deploy_to_staging:
         runs-on: ubuntu-latest
+        needs: src_test_cd
         environment:
             name: staging
 
