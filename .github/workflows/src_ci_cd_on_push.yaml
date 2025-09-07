@@ -50,6 +50,8 @@ jobs:
         needs: check_staging_infrastructure_exists
         if: needs.check_staging_infrastructure_exists.outputs.instance_exists == 'false'
         uses: ./.github/workflows/staging_infra_deployment.yaml
+        secrets:
+            inherit: true
 
     src_deploy_to_staging:
         runs-on: ubuntu-latest
@@ -189,6 +191,8 @@ jobs:
         needs: check_production_infrastructure_exists
         if: needs.check_production_infrastructure_exists.outputs.instance_exists == 'false'
         uses: ./.github/workflows/prod_infra_deployment.yaml
+        secrets:
+            inherit: true
 
     src_deploy_to_production:
         runs-on: ubuntu-latest
