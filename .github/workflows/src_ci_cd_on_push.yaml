@@ -40,7 +40,7 @@ jobs:
             - name: Output if it exists or not
               id: instance_exists
               run: |
-                  if [[ -z ${{ steps.get_instance_id.outputs.instance_id }} || ${{ steps.get_instance_id.outputs.instance_id }} == 'None' ]]; then
+                  if [[ -z "${{ steps.get_instance_id.outputs.instance_id }}" || "${{ steps.get_instance_id.outputs.instance_id }}" == 'None' ]]; then
                       echo "instance_exists=false" >> $GITHUB_OUTPUT
                   else
                       echo "instance_exists=true" >> $GITHUB_OUTPUT
@@ -179,7 +179,7 @@ jobs:
             - name: Output if it exists or not
               id: instance_exists
               run: |
-                  if [[ -z ${{ steps.get_instance_id.outputs.instance_id }} || ${{ steps.get_instance_id.outputs.instance_id }} == 'None' ]]; then
+                  if [[ -z "${{ steps.get_instance_id.outputs.instance_id }}" || "${{ steps.get_instance_id.outputs.instance_id }}" == 'None' ]]; then
                       echo "instance_exists=false" >> $GITHUB_OUTPUT
                   else
                       echo "instance_exists=true" >> $GITHUB_OUTPUT
