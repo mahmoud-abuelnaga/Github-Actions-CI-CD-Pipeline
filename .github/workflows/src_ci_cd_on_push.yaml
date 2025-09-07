@@ -128,7 +128,6 @@ jobs:
                       --group-id ${{ steps.get_staging_instance_security_group.outputs.security_group_id }} \
                       --ip-permissions \
                       "IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges=[{CidrIp=${{ steps.get_runner_public_ip.outputs.runner_public_ip }}/32,Description='Allow ssh from runner'}]"
-                      --region ${{ vars.AWS_DEFAULT_REGION }}
 
             - name: Deploy to staging instance
               uses: burnett01/rsync-deployments@7.1.0
@@ -159,7 +158,6 @@ jobs:
                       --protocol tcp \
                       --port 22 \
                       --cidr "${{ steps.get_runner_public_ip.outputs.runner_public_ip }}/32"
-                      --region ${{ vars.AWS_DEFAULT_REGION }}
 
     check_production_infrastructure_exists:
         runs-on: ubuntu-latest
@@ -273,7 +271,6 @@ jobs:
                       --group-id ${{ steps.get_instance_security_group.outputs.security_group_id }} \
                       --ip-permissions \
                       "IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges=[{CidrIp=${{ steps.get_runner_public_ip.outputs.runner_public_ip }}/32,Description='Allow ssh from runner'}]"
-                      --region ${{ vars.AWS_DEFAULT_REGION }}
 
             - name: Deploy to production instance
               uses: burnett01/rsync-deployments@7.1.0
@@ -304,4 +301,3 @@ jobs:
                       --protocol tcp \
                       --port 22 \
                       --cidr "${{ steps.get_runner_public_ip.outputs.runner_public_ip }}/32"
-                      --region ${{ vars.AWS_DEFAULT_REGION }}
