@@ -1,4 +1,4 @@
-name: Production environment infrastructure deployment
+name: Production environment infrastructure deployment workflow
 
 on:
     push:
@@ -23,7 +23,7 @@ defaults:
         working-directory: ./infra/production
 
 jobs:
-    staging_infra_deploy:
+    production_infra_deploy:
         runs-on: ubuntu-latest
         environment:
             name: production

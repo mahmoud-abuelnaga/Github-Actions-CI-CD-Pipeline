@@ -9,6 +9,9 @@ on:
 
     workflow_dispatch:
 
+env:
+    AWS_REGION: ${{ vars.AWS_DEFAULT_REGION }}
+
 jobs:
     src_test:
         uses: ./.github/workflows/src_ci_on_pull_request.yaml
