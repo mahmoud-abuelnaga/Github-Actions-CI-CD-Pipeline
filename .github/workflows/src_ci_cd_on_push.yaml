@@ -1,4 +1,4 @@
-name: Source code CD Workflow
+name: Source code Push CI/CD Workflow
 
 on:
     push:
@@ -11,7 +11,7 @@ on:
 
 jobs:
     src_test_cd:
-        uses: ./.github/workflows/src_ci.yaml
+        uses: ./.github/workflows/src_ci_on_pull_request.yaml
 
     src_deploy_to_staging:
         runs-on: ubuntu-latest
