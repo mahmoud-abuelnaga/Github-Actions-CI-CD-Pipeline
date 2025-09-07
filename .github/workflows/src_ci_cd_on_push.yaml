@@ -64,6 +64,8 @@ jobs:
             - src_test
             - deploy_staging_infrastructure
 
+        if: always() && needs.src_test.result == 'success' && (needs.deploy_staging_infrastructure.result == 'success' || needs.deploy_staging_infrastructure.result == 'skipped')
+
         environment:
             name: staging
 
@@ -206,6 +208,8 @@ jobs:
         needs:
             - src_deploy_to_staging
             - deploy_production_infrastructure
+
+        if: always() && needs.src_deploy_to_staging.result == 'success' && (needs.deploy_production_infrastructure.result == 'success' || needs.deploy_production_infrastructure.result == 'skipped')
 
         environment:
             name: production
