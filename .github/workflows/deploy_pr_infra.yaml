@@ -109,11 +109,11 @@ jobs:
             name: pull_request
 
         env:
-            TF_VAR_public_key: "${{ secrets.EC2_PUBLIC_KEY }}"
-            TF_VAR_key_name: "github-actions-proj-pr-${{ inputs.pr_number }}-key"
-            TF_VAR_sg_name: "github-actions-proj-pr-${{ inputs.pr_number }}-sg"
-            TF_VAR_sg_description: "Github Actions Proj - Security group for PR #${{ inputs.pr_number }}"
-            TF_VAR_instance_name: "github-actions-proj-pr-${{ inputs.pr_number }}-instance"
+            public_key: "${{ secrets.EC2_PUBLIC_KEY }}"
+            key_name: "github-actions-proj-pr-${{ inputs.pr_number }}-key"
+            sg_name: "github-actions-proj-pr-${{ inputs.pr_number }}-sg"
+            sg_description: "Github Actions Proj - Security group for PR #${{ inputs.pr_number }}"
+            instance_name: "github-actions-proj-pr-${{ inputs.pr_number }}-instance"
             workspace_name: "pull-request-${{ inputs.pr_number }}"
 
         defaults:
@@ -141,7 +141,17 @@ jobs:
 
             - name: Terraform plan
               id: plan
-              run: terraform plan
+              run: |
+                  terraform plan -var="public_key=${{ secrets.EC2_PUBLIC_KEY }}" \
+                                    -var="key_name=${{ env.key_name }}" \
+                                    -var="sg_name=${{ env.sg_name }}" \
+                                    -var="sg_description=${{ env.sg_description }}" \
+                                    -var="instance_name=${{ env.instance_name }}"
 
             - name: Terraform apply
-              run: terraform apply -auto-approve
+              run: terraform apply -auto-approve \
+                  -var="public_key=${{ secrets.EC2_PUBLIC_KEY }}" \
+                  -var="key_name=${{ env.key_name }}" \
+                  -var="sg_name=${{ env.sg_name }}" \
+                  -var="sg_description=${{ env.sg_description }}" \
+                  -var="instance_name=${{ env.instance_name }}"
