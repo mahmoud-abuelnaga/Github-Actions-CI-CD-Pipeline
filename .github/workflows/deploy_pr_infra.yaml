@@ -139,19 +139,18 @@ jobs:
             - name: Terraform validate
               run: terraform validate
 
+            - name: Adding environment variable to .tfvars file
+              run: |
+                  echo 'public_key = "${{ secrets.EC2_PUBLIC_KEY }}"' >> terraform.tfvars
+                  echo 'key_name = "${{ env.key_name }}"' >> terraform.tfvars
+                  echo 'sg_name = "${{ env.sg_name }}"' >> terraform.tfvars
+                  echo 'sg_description = "${{ env.sg_description }}"' >> terraform.tfvars
+                  echo 'instance_name = "${{ env.instance_name }}"' >> terraform.tfvars
+
             - name: Terraform plan
               id: plan
               run: |
-                  terraform plan -var="public_key=${{ secrets.EC2_PUBLIC_KEY }}" \
-                                    -var="key_name=${{ env.key_name }}" \
-                                    -var="sg_name=${{ env.sg_name }}" \
-                                    -var="sg_description=${{ env.sg_description }}" \
-                                    -var="instance_name=${{ env.instance_name }}"
+                  terraform plan
 
             - name: Terraform apply
-              run: terraform apply -auto-approve \
-                  -var="public_key=${{ secrets.EC2_PUBLIC_KEY }}" \
-                  -var="key_name=${{ env.key_name }}" \
-                  -var="sg_name=${{ env.sg_name }}" \
-                  -var="sg_description=${{ env.sg_description }}" \
-                  -var="instance_name=${{ env.instance_name }}"
+              run: terraform apply -auto-approve
