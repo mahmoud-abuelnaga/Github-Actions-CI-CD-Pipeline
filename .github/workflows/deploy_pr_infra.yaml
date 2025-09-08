@@ -131,7 +131,7 @@ jobs:
 
             - name: Edit workspace name in backend.tf
               run: |
-                  sed -i "s|#name = workspace_name|name = ${{ env.workspace_name }}|g" backend.tf
+                  sed -i 's|#name = workspace_name|name = "${{ env.workspace_name }}"|g' backend.tf
 
             - name: Terraform Init
               run: terraform init
