@@ -61,6 +61,8 @@ jobs:
               id: get_existing_workspace_id
               shell: bash
               run: |
+                  echo "Terraform cloud organization: ${{ vars.TF_CLOUD_ORGANIZATION }}"
+
                   res=$(curl --header "Authorization: Bearer ${{ secrets.TF_API_TOKEN }}" \
                               --header "Content-Type: application/vnd.api+json" \
                               "https://app.terraform.io/api/v2/organizations/${{ vars.TF_CLOUD_ORGANIZATION }}/workspaces" | jq '.data[] | "\(.attributes.name): \(.id)"')
