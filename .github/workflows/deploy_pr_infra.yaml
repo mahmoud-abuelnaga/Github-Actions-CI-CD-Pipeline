@@ -25,7 +25,27 @@ on:
                 required: true
 
 jobs:
+    check_if_pull_request_is_open:
+        runs-on: ubuntu-latest
+        steps:
+            - name: Get PR state
+              id: get_pr_state
+              run: |
+                  pr_json=$(gh pr view ${{ inputs.pr_number }} --json state || true)
+                  state=$(echo $pr_json | jq .state | cut -d '"' -f 2)
+                  echo "state=$state" >> $GITHUB_OUTPUT
+
+            - name: Fail the workflow if the PR isn't open
+              run: |
+                  if [[ "${{ steps.get_pr_state.outputs.state }}" != "OPEN" ]]; then
+                      echo "PR is not open. Exiting..."
+                      exit 1
+                  fi
+
+                  echo "PR is open. Continuing..."
+
     create_workspace_in_terraform_cloud:
+        needs: check_if_pull_request_is_open
         runs-on: ubuntu-latest
         outputs:
             workspace_id: ${{ steps.output_workspace_id.outputs.workspace_id }}
