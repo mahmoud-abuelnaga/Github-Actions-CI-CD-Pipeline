@@ -18,6 +18,11 @@ on:
                 required: true
 
     workflow_dispatch:
+        inputs:
+            pr_number:
+                type: number
+                description: The number of the PR
+                required: true
 
 jobs:
     create_workspace_in_terraform_cloud:
