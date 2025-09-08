@@ -12,10 +12,6 @@ variable "instance_type" {
   default = "t2.micro"
 }
 
-variable "workspace_name" {
-  type = string
-}
-
 variable "key_name" {
   type = string
 }

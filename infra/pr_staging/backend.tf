@@ -3,7 +3,7 @@ terraform {
     organization = "Github-Actions-CI-CD-Pipeline"
 
     workspaces {
-      name = var.workspace_name
+      #name = workspace_name
     }
   }
 }
