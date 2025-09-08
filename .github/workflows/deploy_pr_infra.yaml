@@ -109,12 +109,12 @@ jobs:
             name: pull_request
 
         env:
-            TF_VAR_public_key: ${{ secrets.EC2_PUBLIC_KEY }}
-            TF_VAR_key_name: github-actions-proj-pr-${{ inputs.pr_number }}-key
-            TF_VAR_sg_name: github-actions-proj-pr-${{ inputs.pr_number }}-sg
-            TF_VAR_sg_description: Github Actions Proj - Security group for PR \#${{ inputs.pr_number }}
-            TF_VAR_instance_name: github-actions-proj-pr-${{ inputs.pr_number }}-instance
-            workspace_name: pull-request-${{ inputs.pr_number }}
+            TF_VAR_public_key: "${{ secrets.EC2_PUBLIC_KEY }}"
+            TF_VAR_key_name: "github-actions-proj-pr-${{ inputs.pr_number }}-key"
+            TF_VAR_sg_name: "github-actions-proj-pr-${{ inputs.pr_number }}-sg"
+            TF_VAR_sg_description: "Github Actions Proj - Security group for PR #${{ inputs.pr_number }}"
+            TF_VAR_instance_name: "github-actions-proj-pr-${{ inputs.pr_number }}-instance"
+            workspace_name: "pull-request-${{ inputs.pr_number }}"
 
         defaults:
             run:
