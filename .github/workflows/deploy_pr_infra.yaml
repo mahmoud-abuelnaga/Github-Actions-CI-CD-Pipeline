@@ -27,6 +27,9 @@ on:
 jobs:
     check_if_pull_request_is_open:
         runs-on: ubuntu-latest
+        env:
+            GH_TOKEN: ${{ github.token }}
+
         steps:
             - name: Get PR state
               id: get_pr_state
