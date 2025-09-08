@@ -67,6 +67,7 @@ jobs:
                               --header "Content-Type: application/vnd.api+json" \
                               "https://app.terraform.io/api/v2/organizations/${{ vars.TF_CLOUD_ORGANIZATION }}/workspaces" | jq '.data[] | "\(.attributes.name): \(.id)"')
 
+                  echo "Existing workspaces: $res"
                   workspace_id=$(echo $res | grep "pull-request-${{ inputs.pr_number }}" | cut -d '"' -f 2 | cut -d " " -f 2)
                   echo "workspace_id=$workspace_id" >> $GITHUB_OUTPUT
 
