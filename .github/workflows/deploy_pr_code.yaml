@@ -76,12 +76,11 @@ jobs:
             public_key: ${{ steps.get_public_key.outputs.public_key }}
 
         steps:
-            - name: Get public key from pull_request environemt
+            - name: Get public key from pull_request environment
               id: get_public_key
               run: |
                   public_key="${{ secrets.EC2_PUBLIC_KEY }}"
-                  echo "::add-mask::${public_key}"
-                  echo "public_key=${public_key}" >> $GITHUB_OUTPUT
+                  echo "public_key=$public_key" >> $GITHUB_OUTPUT
 
     deploy_pr_infrastructure:
         needs:
