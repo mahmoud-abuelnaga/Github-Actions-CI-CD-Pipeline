@@ -1,0 +1,91 @@
+name: Destroy PR infrastructure
+
+on:
+    pull_request:
+        branches:
+            - main
+
+        types:
+            - closed
+
+jobs:
+    check_if_workspace_exists:
+        runs-on: ubuntu-latest
+        outputs:
+            workspace_id: ${{ steps.get_existing_workspace.outputs.workspace_id }}
+
+        steps:
+            - name: Get existing workspace
+              id: get_existing_workspace
+              run: |
+                  res=$(curl --header "Authorization: Bearer ${{ secrets.TF_API_TOKEN }}" \
+                              --header "Content-Type: application/vnd.api+json" \
+                              "https://app.terraform.io/api/v2/organizations/${{ vars.TF_CLOUD_ORGANIZATION }}/workspaces" | jq '.data[] | "\(.attributes.name): \(.id)"')
+
+                  workspace_id=$(echo $res | grep "pull-request-${{ github.event.pull_request.number }}" | cut -d '"' -f 2 | cut -d " " -f 2 || true)
+                  echo "workspace_id=$workspace_id" >> $GITHUB_OUTPUT
+
+    destroy_infrastructure:
+        needs: check_if_workspace_exists
+        if: needs.check_if_workspace_exists.outputs.workspace_id != ''
+        runs-on: ubuntu-latest
+
+        defaults:
+            run:
+                working-directory: ./infra/pr_staging
+
+        env:
+            public_key: "${{ secrets.EC2_PUBLIC_KEY }}"
+            key_name: "github-actions-proj-pr-${{ github.event.pull_request.number }}-key"
+            sg_name: "github-actions-proj-pr-${{ github.event.pull_request.number }}-sg"
+            sg_description: "Github Actions Proj - Security group for PR #${{ github.event.pull_request.number }}"
+            instance_name: "github-actions-proj-pr-${{ github.event.pull_request.number }}-instance"
+            workspace_name: "pull-request-${{ github.event.pull_request.number }}"
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v5
+
+            - name: Setup terraform
+              uses: hashicorp/setup-terraform@v3
+              with:
+                  cli_config_credentials_token: ${{ secrets.TF_API_TOKEN }}
+
+            - name: Edit workspace name in backend.tf
+              run: |
+                  sed -i 's|#name = workspace_name|name = "${{ env.workspace_name }}"|g' backend.tf
+
+            - name: Terraform Init
+              run: terraform init
+
+            - name: Terraform validate
+              run: terraform validate
+
+            - name: Adding environment variable to .tfvars file
+              run: |
+                  echo 'public_key = "${{ secrets.EC2_PUBLIC_KEY }}"' >> terraform.tfvars
+                  echo 'key_name = "${{ env.key_name }}"' >> terraform.tfvars
+                  echo 'sg_name = "${{ env.sg_name }}"' >> terraform.tfvars
+                  echo 'sg_description = "${{ env.sg_description }}"' >> terraform.tfvars
+                  echo 'instance_name = "${{ env.instance_name }}"' >> terraform.tfvars
+
+            - name: Terraform destroy
+              run: |
+                  terraform destroy -auto-approve
+
+    delete_workspace_on_terraform_cloud:
+        needs:
+            - check_if_workspace_exists
+            - destroy_infrastructure
+
+        if: always() && needs.check_if_workspace_exists.outputs.workspace_id != ''
+        runs-on: ubuntu-latest
+
+        steps:
+            - name: Delete workspace in terraform cloud
+              run: |
+                  curl \
+                      --header "Authorization: Bearer ${{ secrets.TF_API_TOKEN }}" \
+                      --header "Content-Type: application/vnd.api+json" \
+                      --request DELETE \
+                      https://app.terraform.io/api/v2/workspaces/${{ needs.check_if_workspace_exists.outputs.workspace_id }}
