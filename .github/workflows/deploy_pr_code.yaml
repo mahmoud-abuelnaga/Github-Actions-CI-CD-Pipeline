@@ -63,7 +63,7 @@ jobs:
                       instance_id=''
                   fi
 
-                  echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
+                  echo "instance_id=$instance_id" >> $GITHUB_OUTPUT
 
     deploy_pr_infrastructure:
         needs: check_if_pr_infrastructure_exists
