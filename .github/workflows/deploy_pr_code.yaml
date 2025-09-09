@@ -60,7 +60,7 @@ jobs:
 
     deploy_pr_infrastructure:
         needs: check_if_pr_infrastructure_exists
-        if: needs.check_if_pr_infrastructure_exists.outputs.instance_id == '' || needs.check_if_pr_infrastructure_exists.result == 'None'
+        if: needs.check_if_pr_infrastructure_exists.outputs.instance_id == '' || needs.check_if_pr_infrastructure_exists.outputs.instance_id == 'None'
 
         uses: ./.github/workflows/deploy_pr_infra.yaml
         with:
