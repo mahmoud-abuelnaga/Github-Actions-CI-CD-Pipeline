@@ -53,10 +53,16 @@ jobs:
               run: |
                   INSTANCE_ID=$(aws ec2 describe-instances \
                                       --filters "Name=tag:Name,Values=github-actions-proj-pr-${{ inputs.pr_number }}-instance" \
-                                      --query "Reservations[*].Instances[*].InstanceId" \
+                                      --query "Reservations[*].Instances[*].[InstanceId, State.Name]" \
                                       --output text)
 
-                  echo "INSTANCE_ID: $INSTANCE_ID"
+                  instance_id=$(echo $INSTANCE_ID | awk '{print $1}')
+                  instance_state=$(echo $INSTANCE_ID | awk '{print $2}')
+
+                  if [[ $instance_state != 'running' ]]; then
+                      instance_id=''
+                  fi
+
                   echo "instance_id=$INSTANCE_ID" >> $GITHUB_OUTPUT
 
     deploy_pr_infrastructure:
