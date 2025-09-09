@@ -122,7 +122,7 @@ jobs:
                   echo "runner_public_ip=$PUBLIC_IP" >> $GITHUB_OUTPUT
 
             - name: Allow ssh on the security group of instance from the runner ip
-              run: |
+              run: >
                   aws ec2 authorize-security-group-ingress \
                       --group-id ${{ steps.get_instance_security_group.outputs.security_group_id }} \
                       --ip-permissions \
