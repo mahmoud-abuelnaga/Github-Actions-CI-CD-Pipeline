@@ -135,6 +135,9 @@ jobs:
                       --ip-permissions \
                       "IpProtocol=tcp,FromPort=22,ToPort=22,IpRanges=[{CidrIp=${{ steps.get_runner_public_ip.outputs.runner_public_ip }}/32,Description='Allow ssh from runner'}]"
 
+            - name: Checkout the repository
+              uses: actions/checkout@v5
+
             - name: Deploy to instance
               uses: burnett01/rsync-deployments@7.1.0
               with:
