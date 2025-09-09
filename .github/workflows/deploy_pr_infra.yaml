@@ -20,7 +20,7 @@ on:
     workflow_dispatch:
         inputs:
             pr_number:
-                type: number
+                type: string
                 description: The number of the PR
                 required: true
 
