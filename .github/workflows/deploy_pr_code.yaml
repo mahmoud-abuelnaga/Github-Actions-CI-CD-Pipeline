@@ -69,7 +69,10 @@ jobs:
             TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
 
     deploy_pr_code:
-        needs: deploy_pr_infrastructure
+        needs:
+            - deploy_pr_infrastructure
+            - check_if_pr_is_open
+
         if: needs.deploy_pr_infrastructure.result == 'success' || needs.deploy_pr_infrastructure.result == 'skipped'
         runs-on: ubuntu-latest
         env:
