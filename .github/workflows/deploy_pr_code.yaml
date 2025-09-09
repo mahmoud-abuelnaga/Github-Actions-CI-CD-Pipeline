@@ -65,27 +65,9 @@ jobs:
 
                   echo "instance_id=$instance_id" >> $GITHUB_OUTPUT
 
-    get_ec2_public_key:
-        needs: check_if_pr_infrastructure_exists
-        if: needs.check_if_pr_infrastructure_exists.outputs.instance_id == ''
-        runs-on: ubuntu-latest
-        environment:
-            name: pull_request
-
-        outputs:
-            public_key: ${{ steps.get_public_key.outputs.public_key }}
-
-        steps:
-            - name: Get public key from pull_request environment
-              id: get_public_key
-              run: |
-                  public_key="${{ secrets.EC2_PUBLIC_KEY }}"
-                  echo "public_key=$public_key" >> $GITHUB_OUTPUT
-
     deploy_pr_infrastructure:
         needs:
             - check_if_pr_infrastructure_exists
-            - get_ec2_public_key
 
         if: needs.check_if_pr_infrastructure_exists.outputs.instance_id == ''
         uses: ./.github/workflows/deploy_pr_infra.yaml
@@ -93,7 +75,7 @@ jobs:
             pr_number: ${{ fromJson(inputs.pr_number) }}
         secrets:
             TF_API_TOKEN: "${{ secrets.TF_API_TOKEN }}"
-            EC2_PUBLIC_KEY: "${{ needs.get_ec2_public_key.outputs.public_key }}"
+            EC2_PUBLIC_KEY: "${{ secrets.EC2_PUBLIC_KEY }}"
 
     deploy_pr_code:
         needs:
