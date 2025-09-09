@@ -62,13 +62,12 @@ jobs:
 
     deploy_pr_infrastructure:
         needs: check_if_pr_infrastructure_exists
-        if: needs.check_if_pr_infrastructure_exists.outputs.instance_id == '' || needs.check_if_pr_infrastructure_exists.outputs.instance_id == 'None'
-
+        if: needs.check_if_pr_infrastructure_exists.outputs.instance_id == ''
         uses: ./.github/workflows/deploy_pr_infra.yaml
-        with:
-            pr_number: ${{ inputs.pr_number }}
         secrets:
             TF_API_TOKEN: ${{ secrets.TF_API_TOKEN }}
+        with:
+            pr_number: ${{ inputs.pr_number }}
 
     deploy_pr_code:
         needs:
