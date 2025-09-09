@@ -70,7 +70,7 @@ jobs:
 
     deploy_pr_code:
         needs: deploy_pr_infrastructure
-        if: always() && (needs.deploy_pr_infrastructure.result == 'success' || needs.deploy_pr_infrastructure.result == 'skipped')
+        if: needs.deploy_pr_infrastructure.result == 'success' || needs.deploy_pr_infrastructure.result == 'skipped'
         runs-on: ubuntu-latest
         env:
             AWS_ACCESS_KEY_ID: ${{ secrets.AWS_ACCESS_KEY_ID }}
