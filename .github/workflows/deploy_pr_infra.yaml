@@ -7,10 +7,6 @@ on:
                 description: Terraform API token
                 required: true
 
-            # EC2_PUBLIC_KEY:
-            #     description: Public key for EC2 instance
-            #     required: true
-
         inputs:
             pr_number:
                 type: number
